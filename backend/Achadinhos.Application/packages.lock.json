@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "achadinhos.contracts": {
+        "type": "Project"
+      },
+      "achadinhos.domain": {
+        "type": "Project"
+      }
+    }
+  }
+}

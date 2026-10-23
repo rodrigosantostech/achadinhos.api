@@ -1,0 +1,55 @@
+name: achadinhos
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: achadinhos
+      POSTGRES_USER: achadinhos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U achadinhos -d achadinhos"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: migrate
+    environment:
+      ConnectionStrings__Engine: Host=postgres;Database=achadinhos;Username=achadinhos;Password=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: api
+    environment:
+      ASPNETCORE_HTTP_PORTS: 8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Engine: Host=postgres;Database=achadinhos;Username=achadinhos;Password=${POSTGRES_PASSWORD}
+      Authentication__Authority: ${OIDC_AUTHORITY:?Set OIDC_AUTHORITY}
+      Authentication__Audience: ${OIDC_AUDIENCE:?Set OIDC_AUDIENCE}
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  worker:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: worker
+    environment:
+      ConnectionStrings__Engine: Host=postgres;Database=achadinhos;Username=achadinhos;Password=${POSTGRES_PASSWORD}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+volumes:
+  pgdata:

@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <ItemGroup>
+  <ProjectReference Include="../Achadinhos.Domain/Achadinhos.Domain.csproj" />
+  <ProjectReference Include="../Achadinhos.Contracts/Achadinhos.Contracts.csproj" />
+ </ItemGroup>
+</Project>

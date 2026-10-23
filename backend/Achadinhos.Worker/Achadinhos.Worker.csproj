@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+ <PropertyGroup><UserSecretsId>achadinhos-worker-local</UserSecretsId></PropertyGroup>
+ <ItemGroup>
+  <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  <PackageReference Include="Hangfire.NetCore" Version="1.8.25" />
+  <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
+  <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+ </ItemGroup>
+ <ItemGroup>
+   <ProjectReference Include="..\Achadinhos.Infrastructure\Achadinhos.Infrastructure.csproj" />
+ </ItemGroup>
+</Project>

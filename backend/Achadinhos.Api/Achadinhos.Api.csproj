@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+ <ItemGroup>
+  <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+  <ProjectReference Include="../Achadinhos.Infrastructure/Achadinhos.Infrastructure.csproj" />
+  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
+  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" PrivateAssets="all" />
+ </ItemGroup>
+</Project>

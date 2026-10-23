@@ -1,0 +1,38 @@
+name: backend
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: achadinhos_test
+          POSTGRES_USER: achadinhos
+          POSTGRES_PASSWORD: ci-only-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U achadinhos -d achadinhos_test"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      TEST_POSTGRES: Host=localhost;Database=achadinhos_test;Username=achadinhos;Password=ci-only-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+      - run: dotnet restore Achadinhos.sln --locked-mode
+      - run: dotnet build Achadinhos.sln --no-restore -c Release
+      - run: dotnet format Achadinhos.sln --verify-no-changes --no-restore
+      - run: dotnet test Achadinhos.sln --no-build -c Release --logger trx
+      - run: dotnet ef migrations has-pending-model-changes --project backend/Achadinhos.Infrastructure --startup-project backend/Achadinhos.Api --no-build --configuration Release
+      - run: docker compose --env-file .env.example -f infra/compose.yaml config --quiet
+      - run: docker build -f infra/docker/Dockerfile --target api -t achadinhos-api:ci .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: "**/TestResults/*.trx"
